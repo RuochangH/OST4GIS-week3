@@ -32,7 +32,7 @@
     // Check out the use of typeof here — this was not a contrived example.
     // Someone actually messed up the data entry.
     if (typeof schools[i].GRADE_ORG === 'number') {
-      schools[i].HAS_KINDERGARTEN = schools[i].GRADE_LEVEL < 1;
+      schools[i].HAS_KINDERGARTEN = schools[i].GRADE_LEVEL < 1;  //return true of false
       schools[i].HAS_ELEMENTARY = 1 < schools[i].GRADE_LEVEL < 6;
       schools[i].HAS_MIDDLE_SCHOOL = 5 < schools[i].GRADE_LEVEL < 9;
       schools[i].HAS_HIGH_SCHOOL = 8 < schools[i].GRADE_LEVEL < 13;
