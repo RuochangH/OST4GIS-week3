@@ -45,7 +45,7 @@
 
    // clean data
    _.map(schools,function(school){if(typeof school.ZIPCODE ==='string') {
-     split = school.ZIPCOD.split(' ');
+     split = school.ZIPCODE.split(' ');
      normalized_zip = parseInt(split[0]);
      school.ZIPCODE = normalized_zip;
    } if(typeof school.GRADE_ORG ==='number') {  // if number
@@ -58,7 +58,7 @@
      school.HAS_ELEMENTARY = school.GRADE_LEVEL.toUpperCase().indexOf('ELEM') >= 0;
      school.HAS_MIDDLE_SCHOOL = school.GRADE_LEVEL.toUpperCase().indexOf('MID') >= 0;
      school.HAS_HIGH_SCHOOL = school.GRADE_LEVEL.toUpperCase().indexOf('HIGH') >= 0;
-   } return school})
+   } return school;});
 
     /*
     // Check out the use of typeof here — this was not a contrived example.
@@ -78,8 +78,8 @@
     */
 
   // filter data
-  var filtered_data = [];
-  var filtered_out = [];
+  //var filtered_data = [];
+  //var filtered_out = [];
   /*
   for (var i = 0; i < schools.length - 1; i++) {
     isOpen = schools[i].ACTIVE.toUpperCase() == 'OPEN';
@@ -106,28 +106,57 @@
                school.HAS_HIGH_SCHOOL);
    meetsMinimumEnrollment = school.ENROLLMENT > minEnrollment;
    meetsZipCondition = acceptedZipcodes.indexOf(school.ZIPCODE) >= 0;
-   filter_condition = (isOpen &&
+   school.filter_condition = (isOpen &&
                        isSchool &&
                        meetsMinimumEnrollment &&
-                       !meetsZipCondition);})
+                       !meetsZipCondition);
+                     return school;});
 
+   var filtered_data = _.filter(schools, function(school){return school.filter_condition==true;});
+   var filtered_out = _.filter(schools, function(school){return school.filter_condition==false;});
 
-
-
-
+/*
     if (filter_condition) {
       filtered_data.push(schools[i]);
     } else {
       filtered_out.push(schools[i]);
     }
   }
+*/
+
   console.log('Included:', filtered_data.length);
   console.log('Excluded:', filtered_out.length);
+
 
   //use array choose
 
   // main loop
   var color;
+
+  _.each(filtered_data, function(school){
+    isOpen = school.ACTIVE.toUpperCase() == 'OPEN';
+    isPublic = (school.TYPE.toUpperCase() !== 'CHARTER' ||
+                school.TYPE.toUpperCase() !== 'PRIVATE');
+    meetsMinimumEnrollment = school.ENROLLMENT > minEnrollment;
+
+    if (school.HAS_HIGH_SCHOOL){
+      color = '#0000FF';
+    } else if (school.HAS_MIDDLE_SCHOOL) {
+      color = '#00FF00';
+    } else {
+      color = '##FF0000';
+    }
+
+    var pathOpts = {'radius': school.ENROLLMENT / 3,
+                    'fillColor': color};
+    L.circle([school.Y, school.X], pathOpts)
+      .bindPopup(school.FACILNAME_LABEL)
+      .addTo(map);
+  });
+
+
+
+/*
   for (var i = 0; i < filtered_data.length - 1; i++) {
     isOpen = filtered_data[i].ACTIVE.toUpperCase() == 'OPEN';
     isPublic = (filtered_data[i].TYPE.toUpperCase() !== 'CHARTER' ||
@@ -149,5 +178,6 @@
       .bindPopup(filtered_data[i].FACILNAME_LABEL)
       .addTo(map);
   }
+*/
 
 })();
